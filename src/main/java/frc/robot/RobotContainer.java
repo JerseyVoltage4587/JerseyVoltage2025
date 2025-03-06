@@ -37,7 +37,7 @@ public class RobotContainer {
       () -> -m_OI.j.getRawAxis(1),
       () -> -m_OI.j.getRawAxis(0),
       () -> -m_OI.j.getRawAxis(2),
-      () -> false));
+      () -> true));
 
     // m_elevator.setDefaultCommand(new ElevatorHome());
     

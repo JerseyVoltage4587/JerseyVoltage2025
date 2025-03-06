@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 import frc.robot.commands.Elevator.ElevatorDown;
 import frc.robot.commands.Elevator.ElevatorUp;
 import frc.robot.commands.Elevator.ElevatorUpAt3;
@@ -24,6 +25,7 @@ public class OI extends SubsystemBase {
   
   static OI m_Instance = null;
   Elevator m_elevator = Elevator.getInstance();
+  SwerveSubsystem m_swerve = SwerveSubsystem.getInstance();
 
   //Controllers 1 & 2
   public Joystick j, k;
@@ -68,6 +70,9 @@ public class OI extends SubsystemBase {
     kRightStickButton = new JoystickButton(k, 12);
     
     //Robot Commands
+
+    jLeftTrigger.whileTrue(new SwerveDriveJoysticks(m_swerve, () -> 0.0, () -> -0.1, () -> 0.0, () -> true));
+    jRightTrigger.whileTrue(new SwerveDriveJoysticks(m_swerve, () -> 0.0, () -> 0.1, () -> 0.0, () -> true));
 
     kLeftTrigger.whileTrue(new ScorerForward());
     kRightTrigger.whileTrue(new RunIntake());
