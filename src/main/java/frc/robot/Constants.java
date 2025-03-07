@@ -79,11 +79,15 @@ public final class Constants {
     public static final double kElevatorF = 0;
     public static final double kElevatorIZone = 100;
 
+    public static final double kMinSetpoint = 0;
+    
     public static final double kRestingSetPoint = 0;
     public static final double kL1Setpoint = 0;
     public static final double kL2Setpoint = 15;
     public static final double kL3Setpoint = 30;
     public static final double kL4Setpoint = 60;
+
+    public static final double kMaxSetpoint = 70;
 
     public static final double kElevatorMaxVelocity = 30;
     public static final double kElevatorMaxAcceleration = 120;

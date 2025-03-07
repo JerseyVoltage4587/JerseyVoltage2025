@@ -57,7 +57,6 @@ public class Elevator extends SubsystemBase {
     ElevatorConstants.kElevatorVoltsPerSecond, 
     ElevatorConstants.kElevatorVoltsPerSecondSquared, 0.02);
     
-
   private static TrapezoidProfile elevatorProfile = new TrapezoidProfile(
     new TrapezoidProfile.Constraints(
       ElevatorConstants.kElevatorMaxVelocity, 
@@ -108,6 +107,7 @@ public class Elevator extends SubsystemBase {
 
     // leftElevatorMotor.configure(leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     initialDistance = 0;
+    initialVelocity = 0;
   }
 
   @Override
@@ -131,6 +131,7 @@ public class Elevator extends SubsystemBase {
   } 
 
   private double initialDistance;
+  private double initialVelocity;
   private double currentTime;
   private TrapezoidProfile.State currentSetpoint;
   private TrapezoidProfile.State nextSetpoint;
@@ -138,14 +139,26 @@ public class Elevator extends SubsystemBase {
   public void profiledElevatorDistanceInit() {
     elevatorTimer.restart();
     initialDistance = leftElevatorEncoder.getPosition();
+    //try using leftElevatorEncoder.getVelocity() here anyways?  Then we could interrupt motions on the fly every time
+    initialVelocity = 0;
+  }
+
+  //returns target position for smooth stopping
+  public double profiledElevatorStopInit() {
+    elevatorTimer.restart();
+    initialDistance = leftElevatorEncoder.getPosition();
+    initialVelocity = leftElevatorEncoder.getVelocity();
+    // d = 1/2*a*t^2  t = v/a  d = 1/2*a*v^2/a^2  abs is to preserve direction
+    double target = initialDistance + initialVelocity * Math.abs(initialVelocity) / (ElevatorConstants.kElevatorMaxAcceleration * 2);
+    return Math.max(ElevatorConstants.kMinSetpoint, Math.min(target, ElevatorConstants.kMaxSetpoint));
   }
 
   public void profiledElevatorDistance(double distance) {
       currentTime = elevatorTimer.get();
     
     currentSetpoint = elevatorProfile.calculate(
-      currentTime, 
-      new State(initialDistance, 0), 
+      currentTime,
+      new State(initialDistance, initialVelocity), 
       new State(distance, 0));
 
     nextSetpoint = elevatorProfile.calculate(
@@ -179,7 +192,11 @@ public class Elevator extends SubsystemBase {
   }
 
   public void goToPosition(double pos) {
-    leftElevatorClosedLoopController.setReference(pos, ControlType.kMAXMotionPositionControl);
+    leftElevatorMotor.getClosedLoopController().setReference(
+      pos, 
+      ControlType.kPosition, 
+      ClosedLoopSlot.kSlot0,
+      leftElevatorMotorFeedForward.calculateWithVelocities(0, 0));
   }
 
   public static Elevator getInstance() {
