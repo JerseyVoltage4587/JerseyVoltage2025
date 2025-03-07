@@ -25,7 +25,7 @@ public class ElevatorUpAt3 extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_elevator.ElevatorUpAt3();
+    m_elevator.elevatorUpAt3();
   }
 
   // Called once the command ends or is interrupted.

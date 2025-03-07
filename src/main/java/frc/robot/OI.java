@@ -9,11 +9,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import frc.robot.Constants.ElevatorConstants;
 import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 import frc.robot.commands.Elevator.ElevatorDown;
 import frc.robot.commands.Elevator.ElevatorUp;
 import frc.robot.commands.Elevator.ElevatorUpAt3;
 import frc.robot.commands.Elevator.GoToPosition;
+import frc.robot.commands.Elevator.ProfiledElevatorDistance;
 import frc.robot.commands.Intake.RunIntake;
 import frc.robot.commands.Scorer.ScorerForward;
 import frc.robot.subsystems.Elevator;
@@ -73,19 +75,25 @@ public class OI extends SubsystemBase {
 
     jLeftTrigger.whileTrue(new SwerveDriveJoysticks(m_swerve, () -> 0.0, () -> -0.1, () -> 0.0, () -> true));
     jRightTrigger.whileTrue(new SwerveDriveJoysticks(m_swerve, () -> 0.0, () -> 0.1, () -> 0.0, () -> true));
+    
+    // jRightBumper.whileTrue(new ClimberIn());
+    // jLeftBumper.whileTrue(new ClimberOut());
 
-    kLeftTrigger.whileTrue(new ScorerForward());
-    kRightTrigger.whileTrue(new RunIntake());
 
-    // kRightBumper.whileTrue(new ClimberIn());
-    // kLeftBumper.whileTrue(new ClimberOut());
+    kRightTrigger.whileTrue(new ScorerForward());
+    kLeftTrigger.whileTrue(new RunIntake());
+
+    // kRightBumper.whileTrue(new CollectAlgae());
+    // kLeftBumper.whileTrue(new ScoreAlgae());
 
     kLeftBumper.whileTrue(new ElevatorUp());
     kRightBumper.whileTrue(new ElevatorDown());
     kButtonX.whileTrue(new ElevatorUpAt3());
 
-    double testPos = SmartDashboard.getNumber("Elevator Position", 0);
-    // kButtonX.whileTrue(new GoToPosition(testPos));
+    // kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
+    kButtonA.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Setpoint));
+    kButtonB.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Setpoint));
+    // kButtonY.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL4Setpoint));
   }
 
 

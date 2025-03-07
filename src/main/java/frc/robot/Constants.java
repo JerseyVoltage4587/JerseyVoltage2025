@@ -73,22 +73,26 @@ public final class Constants {
     
   public static class ElevatorConstants {
 
-    public static final double kElevatorP = 5;
+    public static final double kElevatorP = 0.1;
     public static final double kElevatorI = 0;
     public static final double kElevatorD = 0;
     public static final double kElevatorF = 0;
     public static final double kElevatorIZone = 100;
 
     public static final double kRestingSetPoint = 0;
-    public static final double kL1Setpoint = 1000;
-    public static final double kL2Setpoint = 2000;
-    public static final double kL3Setpoint = 3000;
-    public static final double kL4Setpoint = 4000;
+    public static final double kL1Setpoint = 0;
+    public static final double kL2Setpoint = 15;
+    public static final double kL3Setpoint = 30;
+    public static final double kL4Setpoint = 60;
 
-    public static final double kElevatorMaxVelocity = 10;
-    public static final double kElevatorMaxAcceleration = 10;
-    public static final double kClosedLoopError = 1; 
+    public static final double kElevatorMaxVelocity = 30;
+    public static final double kElevatorMaxAcceleration = 120;
+    public static final double kClosedLoopError = 0.05; 
 
+    public static final double kElevatorVolts = 0;
+    public static final double kElevatorGravityVolts = 0;
+    public static final double kElevatorVoltsPerSecond = 0.127;
+    public static final double kElevatorVoltsPerSecondSquared = 0;
 
   }
 

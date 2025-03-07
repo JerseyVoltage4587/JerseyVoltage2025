@@ -25,7 +25,6 @@ import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
   static SwerveSubsystem m_Instance = null;
-  OI m_OI = OI.getInstance();
 
   private SwerveModule frontLeftModule = new SwerveModule(
     SwerveConstants.frontLeftDriveMotor,
@@ -149,9 +148,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getCurrentSpeeds() {
     return ChassisSpeeds.fromRobotRelativeSpeeds(
-    -m_OI.j.getRawAxis(1),
-    -m_OI.j.getRawAxis(0),
-    m_OI.j.getRawAxis(2), 
+    -OI.getInstance().j.getRawAxis(1),
+    -OI.getInstance().j.getRawAxis(0),
+    OI.getInstance().j.getRawAxis(2), 
     getGyroToRotation2d());
   }
 
