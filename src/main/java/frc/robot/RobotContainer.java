@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.commands.Autos.LeaveOnly;
 import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
+import frc.robot.commands.Elevator.HoldPosition;
 import frc.robot.commands.Elevator.ProfiledElevatorDistance;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.SwerveSubsystem;
@@ -38,9 +39,9 @@ public class RobotContainer {
       () -> -m_OI.j.getRawAxis(1),
       () -> -m_OI.j.getRawAxis(0),
       () -> -m_OI.j.getRawAxis(2),
-      () -> false));
+      () -> true));
 
-    m_elevator.setDefaultCommand(new ProfiledElevatorDistance(m_elevator.getEncoderValue()));
+    m_elevator.setDefaultCommand(new HoldPosition());
     
     CameraServer.startAutomaticCapture();
 

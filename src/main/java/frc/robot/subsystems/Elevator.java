@@ -31,6 +31,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
 import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -49,7 +50,7 @@ public class Elevator extends SubsystemBase {
   private static SparkMaxConfig leftElevatorConfig = new SparkMaxConfig();
   private static SparkMaxConfig rightElevatorConfig = new SparkMaxConfig();
   
-  private static SparkClosedLoopController leftElevatorClosedLoopController;
+  // private static SparkClosedLoopController leftElevatorClosedLoopController;
   
   private static ElevatorFeedforward leftElevatorMotorFeedForward = new ElevatorFeedforward(
     ElevatorConstants.kElevatorVolts,
@@ -64,11 +65,11 @@ public class Elevator extends SubsystemBase {
 
   Timer elevatorTimer = new Timer();
 
-  private static PIDController elevatorPIDController = new PIDController(
-    Constants.ElevatorConstants.kElevatorP, 
-    Constants.ElevatorConstants.kElevatorI, 
-    Constants.ElevatorConstants.kElevatorD
-  );
+  // private static PIDController elevatorPIDController = new PIDController(
+  //   Constants.ElevatorConstants.kElevatorP, 
+  //   Constants.ElevatorConstants.kElevatorI, 
+  //   Constants.ElevatorConstants.kElevatorD
+  // );
         
   public Elevator() {
     rightElevatorConfig.follow(Constants.kLeftElevatorMotorID, true);
@@ -82,13 +83,12 @@ public class Elevator extends SubsystemBase {
       ElevatorConstants.kElevatorD,
       ElevatorConstants.kElevatorF
       );
-      leftElevatorConfig.closedLoop.outputRange(-0.4, 0.4);
+    leftElevatorConfig.closedLoop.outputRange(ElevatorConstants.kMinOutput, ElevatorConstants.kMaxOutput);
     leftElevatorMotor.configure(leftElevatorConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
     leftElevatorEncoder.setPosition(0);
   }
   
   public void robotInit() {
-    
     //leftElevatorClosedLoopController = leftElevatorMotor.getClosedLoopController();
 
     // leftElevatorConfig.encoder.positionConversionFactor(1/15);
@@ -116,6 +116,7 @@ public class Elevator extends SubsystemBase {
 
     SmartDashboard.putNumber("LeftElevatorEncoderValue", leftElevatorEncoder.getPosition());
     SmartDashboard.putNumber("RightElevatorEncoderValue", rightElevatorEncoder.getPosition());
+    SmartDashboard.putData(this);
   }
 
   public double getEncoderValue() {

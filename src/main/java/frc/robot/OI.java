@@ -88,12 +88,12 @@ public class OI extends SubsystemBase {
 
     kLeftBumper.whileTrue(new ElevatorUp());
     kRightBumper.whileTrue(new ElevatorDown());
-    kButtonX.whileTrue(new ElevatorUpAt3());
+    //kButtonX.whileTrue(new ElevatorUpAt3());
 
-    // kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
+    kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
     kButtonA.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Setpoint));
     kButtonB.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Setpoint));
-    // kButtonY.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL4Setpoint));
+    kButtonY.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL4Setpoint));
   }
 
 

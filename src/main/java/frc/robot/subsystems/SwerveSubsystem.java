@@ -115,7 +115,7 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public double getGyro() {
-    return Math.IEEEremainder(gyro.getAngle(), 360);
+    return -Math.IEEEremainder(gyro.getAngle(), 360);
   }
 
   public Rotation2d getGyroToRotation2d() {
@@ -173,6 +173,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Front Right Motor Rad", frontRightModule.getTurnPosition());
     SmartDashboard.putNumber("Back Left Motor Rad", backLeftModule.getTurnPosition());
     SmartDashboard.putNumber("Back Right Motor Rad", backRightModule.getTurnPosition());
+    SmartDashboard.putNumber("Gyro", getGyro());
 
   }
 

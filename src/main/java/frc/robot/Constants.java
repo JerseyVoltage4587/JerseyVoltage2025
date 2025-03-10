@@ -82,20 +82,22 @@ public final class Constants {
     public static final double kMinSetpoint = 0;
     
     public static final double kRestingSetPoint = 0;
-    public static final double kL1Setpoint = 0;
-    public static final double kL2Setpoint = 15;
-    public static final double kL3Setpoint = 30;
-    public static final double kL4Setpoint = 60;
+    public static final double kL1Setpoint = 5;
+    public static final double kL2Setpoint = 30;
+    public static final double kL3Setpoint = 60;
+    public static final double kL4Setpoint = 95;
 
-    public static final double kMaxSetpoint = 70;
+    public static final double kMaxSetpoint = 100;
 
-    public static final double kElevatorMaxVelocity = 30;
-    public static final double kElevatorMaxAcceleration = 120;
+    public static final double kElevatorMaxVelocity = 90; //75
+    public static final double kElevatorMaxAcceleration = 150; //135
     public static final double kClosedLoopError = 0.05; 
+    public static final double kMinOutput = -0.5;
+    public static final double kMaxOutput = 0.5;
 
     public static final double kElevatorVolts = 0;
-    public static final double kElevatorGravityVolts = 0;
-    public static final double kElevatorVoltsPerSecond = 0.127;
+    public static final double kElevatorGravityVolts = 0.05; //.1
+    public static final double kElevatorVoltsPerSecond = 0.2; //.175
     public static final double kElevatorVoltsPerSecondSquared = 0;
 
   }
@@ -104,7 +106,7 @@ public final class Constants {
     public static final int kLeftElevatorMotorID = 11; //11
     public static final int kRightElevatorMotorID = 10; //10
 
-    public static final int kIntakeFunnelMotorID = 30; //30
+    public static final int kIntakeFunnelMotorID = 90 ; //30
 
     // public static final int kClimberMotorID = 3;
 
