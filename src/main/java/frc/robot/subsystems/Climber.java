@@ -1,49 +1,60 @@
-// // Copyright (c) FIRST and other WPILib contributors.
-// // Open Source Software; you can modify and/or share it under the terms of
-// // the WPILib BSD license file in the root directory of this project.
+// Copyright (c) FIRST and other WPILib contributors.
+// Open Source Software; you can modify and/or share it under the terms of
+// the WPILib BSD license file in the root directory of this project.
 
-// package frc.robot.subsystems;
+package frc.robot.subsystems;
 
-// import com.revrobotics.spark.SparkMax;
-// import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.ctre.phoenix6.swerve.SwerveRequest.Idle;
+import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
-// import edu.wpi.first.wpilibj.motorcontrol.Spark;
-// import edu.wpi.first.wpilibj2.command.SubsystemBase;
-// import frc.robot.Constants;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants;
 
-// public class Climber extends SubsystemBase {
+public class Climber extends SubsystemBase {
   
-//   private static SparkMax climberMotor = new SparkMax(Constants.kClimberMotorID, MotorType.kBrushless);
-//   static Climber m_Instance = null;
+  private static SparkMax climberMotor = new SparkMax(Constants.kClimberMotorID, MotorType.kBrushless);
+  private static SparkMaxConfig climberConfig = new SparkMaxConfig();
+  static Climber m_Instance = null;
   
-//   /** Creates a new Climber. */
-//   public Climber() {}
+  /** Creates a new Climber. */
+  public Climber() {
+    climberConfig.idleMode(IdleMode.kBrake);
+  }
 
-//   @Override
-//   public void periodic() {
-//     // This method will be called once per scheduler run
-//   }
+  @Override
+  public void periodic() {
+    // This method will be called once per scheduler run
+  }
 
-//   public void climberOut() {
-//     climberMotor.set(.8);
-//   }
+  public void climberIn() {
+    if (!DriverStation.isFMSAttached() || DriverStation.getMatchTime() < 30) {
+        climberMotor.set(.8);
+    }
+  }
 
-//   public void climberIn() {
-//     climberMotor.set(-.8);
-//   }
+  public void climberOut() {
+    if (!DriverStation.isFMSAttached() || DriverStation.getMatchTime() < 30) {
+        climberMotor.set(-.3);
+    }
+  }
 
-//   public void zeroMotor() {
-//     climberMotor.set(0);
-//   }
+  public void zeroMotor() {
+    climberMotor.set(0);
+  }
 
-//   public static Climber getInstance() {
-//     if (m_Instance == null) {
-//       synchronized (Climber.class) {
-//         if (m_Instance == null) {
-//           m_Instance = new Climber();
-//         }
-//       }
-//     }
-//     return m_Instance;
-//   }
-// }
+  public static Climber getInstance() {
+    if (m_Instance == null) {
+      synchronized (Climber.class) {
+        if (m_Instance == null) {
+          m_Instance = new Climber();
+        }
+      }
+    }
+    return m_Instance;
+  }
+}

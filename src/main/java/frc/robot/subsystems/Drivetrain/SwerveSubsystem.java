@@ -2,8 +2,12 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
-package frc.robot.subsystems;
+package frc.robot.subsystems.Drivetrain;
 
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
@@ -15,6 +19,7 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.OI;
@@ -97,10 +102,11 @@ public class SwerveSubsystem extends SubsystemBase {
   };
     
   private SwerveDriveOdometry odometer = new SwerveDriveOdometry(kinematics, new Rotation2d(0), getModulePositions);
-
+  RobotConfig config;
 
   //Constructor
   public SwerveSubsystem() {
+    
     new Thread(() -> {
       try {
         Thread.sleep(1000);
@@ -108,6 +114,32 @@ public class SwerveSubsystem extends SubsystemBase {
       } catch (Exception e) {
       }
     }).start();
+
+    try {
+      config = RobotConfig.fromGUISettings();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+
+    AutoBuilder.configure(
+      this::getPose,
+      this::resetPose,
+      this::getCurrentSpeeds,
+      (speeds, feedforwards) -> driveRobotRelative(speeds),
+      new PPHolonomicDriveController(
+        new PIDConstants(0, 0, 0),
+        new PIDConstants(SwerveConstants.kSwerveP, SwerveConstants.kSwerveI, SwerveConstants.kSwerveD)
+      ),
+      config,
+      () -> {
+        var alliance = DriverStation.getAlliance();
+        if (alliance.isPresent()) {
+          return alliance.get() == DriverStation.Alliance.Red;
+        }
+        return false;
+      },
+      this
+    );
   }
 
   public void zeroGyro() {
@@ -175,6 +207,10 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Back Right Motor Rad", backRightModule.getTurnPosition());
     SmartDashboard.putNumber("Gyro", getGyro());
 
+    if (this.getCurrentCommand() != null)
+      SmartDashboard.putData("Swerve Cmd", this.getCurrentCommand());
+
+    SmartDashboard.putString("Swerve Spds",this.getCurrentSpeeds().toString());
   }
 
 

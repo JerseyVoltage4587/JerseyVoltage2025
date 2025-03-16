@@ -129,6 +129,17 @@ public class Elevator extends SubsystemBase {
       ControlType.kPosition, 
       ClosedLoopSlot.kSlot0, 
       leftElevatorMotorFeedForward.calculateWithVelocities(current.velocity, next.velocity));
+
+      SmartDashboard.putNumber("ElvPos\\Cmd", current.position);
+      double actPos = leftElevatorEncoder.getPosition();
+      SmartDashboard.putNumber("ElvPos\\Act", actPos);
+      SmartDashboard.putNumber("ElvPos\\Err", current.position - actPos);
+      SmartDashboard.putNumber("ElvVel\\Cmd", current.velocity);
+      SmartDashboard.putNumber("ElvVel\\Act", leftElevatorEncoder.getVelocity()/60);
+      SmartDashboard.putNumber("ElvCurrent", leftElevatorMotor.getOutputCurrent());
+      SmartDashboard.putNumber("ElvOut\\Volts", leftElevatorMotor.getAppliedOutput() * leftElevatorMotor.getBusVoltage());
+      SmartDashboard.putNumber("ElvOut\\Feedf", leftElevatorMotorFeedForward.calculateWithVelocities(current.velocity, next.velocity));
+
   } 
 
   private double initialDistance;
@@ -173,11 +184,11 @@ public class Elevator extends SubsystemBase {
   public boolean profiledElevatorDistanceFinished()
   {
     currentTime = elevatorTimer.get();
-    return elevatorProfile.isFinished(currentTime);
+    return elevatorProfile.isFinished(currentTime) && (Math.abs(currentSetpoint.position - leftElevatorEncoder.getPosition()) < 0.1 );
   }
 
   public void elevatorUp() {
-    leftElevatorMotor.set(.1);
+    leftElevatorMotor.set(0.1);
   }
 
   public void elevatorUpAt3() {
@@ -185,7 +196,7 @@ public class Elevator extends SubsystemBase {
   }
 
   public void elevatorDown() {
-    leftElevatorMotor.set(-.1);
+    leftElevatorMotor.set(-0.05);
   }
   
   public void zeroMotors() {
@@ -198,6 +209,16 @@ public class Elevator extends SubsystemBase {
       ControlType.kPosition, 
       ClosedLoopSlot.kSlot0,
       leftElevatorMotorFeedForward.calculateWithVelocities(0, 0));
+    
+      SmartDashboard.putNumber("ElvPos\\Cmd", pos);
+      double actPos = leftElevatorEncoder.getPosition();
+      SmartDashboard.putNumber("ElvPos\\Act", actPos);
+      SmartDashboard.putNumber("ElvPos\\Err", pos - actPos);
+      SmartDashboard.putNumber("ElvVel\\Cmd", 0);
+      SmartDashboard.putNumber("ElvVel\\Act", leftElevatorEncoder.getVelocity()/60);
+      SmartDashboard.putNumber("ElvCurrent", leftElevatorMotor.getOutputCurrent());
+      SmartDashboard.putNumber("ElvOut\\Volts", leftElevatorMotor.getAppliedOutput() * leftElevatorMotor.getBusVoltage());
+      SmartDashboard.putNumber("ElvOut\\Feedf", leftElevatorMotorFeedForward.calculateWithVelocities(0, 0));
   }
 
   public static Elevator getInstance() {

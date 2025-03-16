@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.config.RobotConfig;
+
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -81,24 +83,27 @@ public final class Constants {
 
     public static final double kMinSetpoint = 0;
     
-    public static final double kRestingSetPoint = 0;
+    public static final double kRestingSetpoint = 0;
     public static final double kL1Setpoint = 5;
-    public static final double kL2Setpoint = 30;
+    public static final double kProcessorSetpoint = 15;
+    public static final double kL2Setpoint = 35;
+    public static final double kL2Algae = 33.3;
     public static final double kL3Setpoint = 60;
-    public static final double kL4Setpoint = 95;
+    public static final double kL3Algae = 57.7;
+    public static final double kL4Setpoint = 101;
 
-    public static final double kMaxSetpoint = 100;
+    public static final double kMaxSetpoint = 101;
 
-    public static final double kElevatorMaxVelocity = 90; //75
-    public static final double kElevatorMaxAcceleration = 150; //135
+    public static final double kElevatorMaxVelocity = 80; //75
+    public static final double kElevatorMaxAcceleration = 240; //135
     public static final double kClosedLoopError = 0.05; 
     public static final double kMinOutput = -0.5;
     public static final double kMaxOutput = 0.5;
 
     public static final double kElevatorVolts = 0;
     public static final double kElevatorGravityVolts = 0.05; //.1
-    public static final double kElevatorVoltsPerSecond = 0.2; //.175
-    public static final double kElevatorVoltsPerSecondSquared = 0;
+    public static final double kElevatorVoltsPerSecond = 0.135; //.175
+    public static final double kElevatorVoltsPerSecondSquared = 0.001;
 
   }
 
@@ -106,11 +111,12 @@ public final class Constants {
     public static final int kLeftElevatorMotorID = 11; //11
     public static final int kRightElevatorMotorID = 10; //10
 
-    public static final int kIntakeFunnelMotorID = 90 ; //30
+    public static final int kIntakeFunnelMotorID = 30; //30
 
-    // public static final int kClimberMotorID = 3;
+    public static final int kClimberMotorID = 40; //40
 
-    public static final int kLeftScorerMotorID = 21; //20
-    public static final int kRightScorerMotorID = 20; //21
-
+    public static final int kCoralLeftMotorID = 21; //20
+    public static final int kCoralRightMotorID = 20; //21
+    public static final int kAlgaePivotMotorID = 22; //22
+    public static final int kAlgaeScorerMotorID = 23; //23
 }

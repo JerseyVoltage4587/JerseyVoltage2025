@@ -5,12 +5,21 @@
 package frc.robot;
 
 import frc.robot.commands.Autos.LeaveOnly;
+import frc.robot.commands.Autos.ScoreL4;
+import frc.robot.commands.Autos.CoralStationIntake;
 import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 import frc.robot.commands.Elevator.HoldPosition;
 import frc.robot.commands.Elevator.ProfiledElevatorDistance;
 import frc.robot.subsystems.Elevator;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
@@ -27,6 +36,7 @@ public class RobotContainer {
   OI m_OI = OI.getInstance();
   SwerveSubsystem m_swervesubsystem = SwerveSubsystem.getInstance();
   Elevator m_elevator = Elevator.getInstance();
+  private final SendableChooser<Command> autoChooser;
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   
@@ -44,6 +54,12 @@ public class RobotContainer {
     m_elevator.setDefaultCommand(new HoldPosition());
     
     CameraServer.startAutomaticCapture();
+
+    NamedCommands.registerCommand("ScoreL4", new ScoreL4());
+    NamedCommands.registerCommand("CoralStationIntake", new CoralStationIntake());
+
+    autoChooser = AutoBuilder.buildAutoChooser();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Configure the trigger bindings
     configureBindings();
@@ -69,6 +85,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
-    return new LeaveOnly();
+    return autoChooser.getSelected();
   }
 }

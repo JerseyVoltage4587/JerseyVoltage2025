@@ -25,6 +25,7 @@ public class Intake extends SubsystemBase {
   /** Creates a new Intake. */
   public Intake() {
     intakeConfig.idleMode(IdleMode.kCoast);
+    intakeConfig.inverted(true);
     intakeMotor.configure(intakeConfig, ResetMode.kResetSafeParameters, PersistMode.kNoPersistParameters);
   }
 

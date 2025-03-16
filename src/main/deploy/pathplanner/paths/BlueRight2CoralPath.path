@@ -1,0 +1,129 @@
+{
+  "version": "2025.0",
+  "waypoints": [
+    {
+      "anchor": {
+        "x": 7.5855,
+        "y": 1.909
+      },
+      "prevControl": null,
+      "nextControl": {
+        "x": 7.668784800080702,
+        "y": 1.6732805861293611
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 5.052832418943864,
+        "y": 2.88453207922362
+      },
+      "prevControl": {
+        "x": 6.879578016931855,
+        "y": 3.8118843930223347
+      },
+      "nextControl": {
+        "x": 4.007695040486335,
+        "y": 2.353965279326789
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 1.1356147971949897,
+        "y": 0.9872192251595664
+      },
+      "prevControl": {
+        "x": 1.8057379189040406,
+        "y": -0.04523982821198169
+      },
+      "nextControl": {
+        "x": 0.6207123203199999,
+        "y": 1.7805297477053479
+      },
+      "isLocked": false,
+      "linkedName": null
+    },
+    {
+      "anchor": {
+        "x": 3.507782513613071,
+        "y": 3.1250777250601818
+      },
+      "prevControl": {
+        "x": 2.5294618193890916,
+        "y": 2.7642445952402914
+      },
+      "nextControl": null,
+      "isLocked": false,
+      "linkedName": null
+    }
+  ],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 119.8203120424027
+    },
+    {
+      "waypointRelativePos": 2,
+      "rotationDegrees": 54.4172571083733
+    }
+  ],
+  "constraintZones": [],
+  "pointTowardsZones": [],
+  "eventMarkers": [
+    {
+      "name": "ScoreL4",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ScoreL4"
+        }
+      }
+    },
+    {
+      "name": "CoralStationIntake",
+      "waypointRelativePos": 0.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "CoralStationIntake"
+        }
+      }
+    },
+    {
+      "name": "ScoreL4",
+      "waypointRelativePos": 3.0,
+      "endWaypointRelativePos": null,
+      "command": {
+        "type": "named",
+        "data": {
+          "name": "ScoreL4"
+        }
+      }
+    }
+  ],
+  "globalConstraints": {
+    "maxVelocity": 3.0,
+    "maxAcceleration": 3.0,
+    "maxAngularVelocity": 540.0,
+    "maxAngularAcceleration": 720.0,
+    "nominalVoltage": 12.0,
+    "unlimited": false
+  },
+  "goalEndState": {
+    "velocity": 0,
+    "rotation": 60.0362519834082
+  },
+  "reversed": false,
+  "folder": null,
+  "idealStartingState": {
+    "velocity": 0,
+    "rotation": 0.0
+  },
+  "useDefaultConstraints": true
+}

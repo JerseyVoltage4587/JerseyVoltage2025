@@ -4,12 +4,26 @@
 
 package frc.robot;
 
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEvent;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.NetworkTableListener;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.NetworkButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.Constants.ElevatorConstants;
+import frc.robot.commands.Carriage.AlgaePivot.AlgaePivotIn;
+import frc.robot.commands.Carriage.AlgaePivot.AlgaePivotOut;
+import frc.robot.commands.Carriage.AlgaeScorer.AlgaeCollect;
+import frc.robot.commands.Carriage.AlgaeScorer.AlgaeScore;
+import frc.robot.commands.Carriage.CoralScorer.CoralForward;
+import frc.robot.commands.Climber.ClimberIn;
+import frc.robot.commands.Climber.ClimberOut;
+import frc.robot.commands.Drivetrain.SwerveDriveFixed;
 import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 import frc.robot.commands.Elevator.ElevatorDown;
 import frc.robot.commands.Elevator.ElevatorUp;
@@ -17,10 +31,9 @@ import frc.robot.commands.Elevator.ElevatorUpAt3;
 import frc.robot.commands.Elevator.GoToPosition;
 import frc.robot.commands.Elevator.ProfiledElevatorDistance;
 import frc.robot.commands.Intake.RunIntake;
-import frc.robot.commands.Scorer.ScorerForward;
 import frc.robot.subsystems.Elevator;
 import frc.robot.subsystems.Intake;
-import frc.robot.subsystems.SwerveSubsystem;
+import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
 
 public class OI extends SubsystemBase {
   /** Creates a new OI. */
@@ -36,6 +49,8 @@ public class OI extends SubsystemBase {
 
   public Trigger kButtonY, kButtonX, kButtonA, kButtonB, kLeftBumper, kRightBumper, kLeftTrigger, kRightTrigger,
   kMinusButton, kPlusButton, kLeftStickButton, kRightStickButton;
+
+  public POVButton kUpArrow, kRightArrow, kDownArrow, kLeftArrow;
 
   public OI() {
 
@@ -70,30 +85,43 @@ public class OI extends SubsystemBase {
     kPlusButton = new JoystickButton(k, 10);
     kLeftStickButton = new JoystickButton(k, 11);
     kRightStickButton = new JoystickButton(k, 12);
-    
+
+    kUpArrow = new POVButton(k, 0);
+    kRightArrow = new POVButton(k, 90);
+    kDownArrow = new POVButton(k, 180);
+    kLeftArrow = new POVButton(k, 270); 
+
     //Robot Commands
 
-    jLeftTrigger.whileTrue(new SwerveDriveJoysticks(m_swerve, () -> 0.0, () -> -0.1, () -> 0.0, () -> true));
-    jRightTrigger.whileTrue(new SwerveDriveJoysticks(m_swerve, () -> 0.0, () -> 0.1, () -> 0.0, () -> true));
+    jLeftTrigger.whileTrue(new SwerveDriveFixed(m_swerve, 0.0, 0.1, 0.0, false));
+    jRightTrigger.whileTrue(new SwerveDriveFixed(m_swerve, 0.0, -0.1, 0.0, false));
+
     
-    // jRightBumper.whileTrue(new ClimberIn());
-    // jLeftBumper.whileTrue(new ClimberOut());
-
-
-    kRightTrigger.whileTrue(new ScorerForward());
-    kLeftTrigger.whileTrue(new RunIntake());
-
     // kRightBumper.whileTrue(new CollectAlgae());
     // kLeftBumper.whileTrue(new ScoreAlgae());
-
+    
     kLeftBumper.whileTrue(new ElevatorUp());
     kRightBumper.whileTrue(new ElevatorDown());
     //kButtonX.whileTrue(new ElevatorUpAt3());
-
+    
     kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
     kButtonA.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Setpoint));
     kButtonB.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Setpoint));
     kButtonY.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL4Setpoint));
+    kLeftArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kRestingSetpoint));
+    kDownArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Algae));
+    kUpArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Algae));
+
+    kPlusButton.whileTrue(new ClimberIn());
+    kMinusButton.whileTrue(new ClimberOut());
+    kRightStickButton.whileTrue(new AlgaePivotOut());
+    kLeftStickButton.whileTrue(new AlgaePivotIn());
+
+    kRightTrigger.whileTrue(new RunIntake());
+    kLeftTrigger.whileTrue(new CoralForward());
+    // kRightBumper.whileTrue(new AlgaeCollect());
+    // kLeftBumper.whileTrue(new AlgaeScore());
+
   }
 
 

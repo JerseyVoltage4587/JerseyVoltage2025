@@ -14,15 +14,15 @@ import frc.robot.Constants.RobotConstants;
 import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
 
 /* You should consider using the more terse Command factories API instead https://docs.wpilib.org/en/stable/docs/software/commandbased/organizing-command-based.html#defining-commands */
-public class SwerveDriveJoysticks extends Command {
+public class SwerveDriveFixed extends Command {
   /** Creates a new SwerveDriveJoysticks. */
   private final SwerveSubsystem m_Swerve = SwerveSubsystem.getInstance();
-    private final Supplier<Double> xSpeedFunction, ySpeedFunction, thetaFunction;
-    private final Supplier<Boolean> fieldOrientedFunction;
+    private final Double xSpeedFunction, ySpeedFunction, thetaFunction;
+    private final Boolean fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, thetaLimiter;
 
-    public SwerveDriveJoysticks(SwerveSubsystem m_Swerve, Supplier<Double> xSpeedFunction, Supplier<Double> ySpeedFunction,
-    Supplier<Double> thetaFunction, Supplier<Boolean> fieldOrientedFunction) {
+    public SwerveDriveFixed(SwerveSubsystem m_Swerve, Double xSpeedFunction, Double ySpeedFunction,
+    Double thetaFunction, Boolean fieldOrientedFunction) {
         
     //this.m_Swerve = m_Swerve;
     this.xSpeedFunction = xSpeedFunction;
@@ -47,9 +47,9 @@ public class SwerveDriveJoysticks extends Command {
   public void execute() {
     
 
-    double xSpeed = xSpeedFunction.get();
-    double ySpeed = ySpeedFunction.get();
-    double theta = thetaFunction.get();
+    double xSpeed = xSpeedFunction;
+    double ySpeed = ySpeedFunction;
+    double theta = thetaFunction;
 
     xSpeed = Math.abs(xSpeed) > RobotConstants.kDeadBand ? xSpeed : 0.0;
     ySpeed = Math.abs(ySpeed) > RobotConstants.kDeadBand ? ySpeed : 0.0;
@@ -60,7 +60,7 @@ public class SwerveDriveJoysticks extends Command {
     // theta = thetaLimiter.calculate(theta) * RobotConstants.MaxAngularAcceleration;
 
     ChassisSpeeds newSpeeds;
-    if (fieldOrientedFunction.get()) {
+    if (fieldOrientedFunction) {
         newSpeeds = ChassisSpeeds.fromFieldRelativeSpeeds(xSpeed, ySpeed, theta, m_Swerve.getGyroToRotation2d());
     } else {
         newSpeeds = new ChassisSpeeds(xSpeed, ySpeed, theta);
