@@ -21,8 +21,10 @@ import frc.robot.commands.Carriage.AlgaePivot.AlgaePivotOut;
 import frc.robot.commands.Carriage.AlgaeScorer.AlgaeCollect;
 import frc.robot.commands.Carriage.AlgaeScorer.AlgaeScore;
 import frc.robot.commands.Carriage.CoralScorer.CoralForward;
+import frc.robot.commands.Carriage.CoralScorer.CoralL1Forward;
 import frc.robot.commands.Climber.ClimberIn;
 import frc.robot.commands.Climber.ClimberOut;
+import frc.robot.commands.Drivetrain.ForwardAtAngle;
 import frc.robot.commands.Drivetrain.SwerveDriveFixed;
 import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 import frc.robot.commands.Elevator.ElevatorDown;
@@ -48,7 +50,9 @@ public class OI extends SubsystemBase {
   jMinusButton, jPlusButton, jLeftStickButton, jRightStickButton;
 
   public Trigger kButtonY, kButtonX, kButtonA, kButtonB, kLeftBumper, kRightBumper, kLeftTrigger, kRightTrigger,
-  kMinusButton, kPlusButton, kLeftStickButton, kRightStickButton;
+  kMinusButton, kPlusButton, kLeftStickButton, kRightStickButton, kHouseButton, kCircleButton;
+
+  public POVButton jUpArrow, jUpRightArrow, jRightArrow, jDownRightArrow, jDownArrow, jDownLeftArrow, jLeftArrow, jUpLeftArrow;
 
   public POVButton kUpArrow, kRightArrow, kDownArrow, kLeftArrow;
 
@@ -72,6 +76,15 @@ public class OI extends SubsystemBase {
     jLeftStickButton = new JoystickButton(j, 11);
     jRightStickButton = new JoystickButton(j, 12);
 
+    jUpArrow = new POVButton(j, 0);
+    jUpRightArrow = new POVButton(j, 45);
+    jRightArrow = new POVButton(j, 90);
+    jDownRightArrow = new POVButton(j, 135);
+    jDownArrow = new POVButton(j, 180);
+    jDownLeftArrow = new POVButton(j, 225);
+    jLeftArrow = new POVButton(j, 270);
+    jUpLeftArrow = new POVButton(j, 315);
+
     //Controller 2 Buttons
     kButtonY = new JoystickButton(k, 1);
     kButtonB = new JoystickButton(k, 2);
@@ -85,6 +98,8 @@ public class OI extends SubsystemBase {
     kPlusButton = new JoystickButton(k, 10);
     kLeftStickButton = new JoystickButton(k, 11);
     kRightStickButton = new JoystickButton(k, 12);
+    kHouseButton = new JoystickButton(k, 13);
+    kCircleButton = new JoystickButton(k, 14);
 
     kUpArrow = new POVButton(k, 0);
     kRightArrow = new POVButton(k, 90);
@@ -92,18 +107,27 @@ public class OI extends SubsystemBase {
     kLeftArrow = new POVButton(k, 270); 
 
     //Robot Commands
+    //Driver Commands
 
     jLeftTrigger.whileTrue(new SwerveDriveFixed(m_swerve, 0.0, 0.1, 0.0, false));
     jRightTrigger.whileTrue(new SwerveDriveFixed(m_swerve, 0.0, -0.1, 0.0, false));
 
+    jUpArrow.whileTrue(new ForwardAtAngle(0));
+    jUpRightArrow.whileTrue(new ForwardAtAngle(45));
+    jRightArrow.whileTrue(new ForwardAtAngle(90));
+    jDownRightArrow.whileTrue(new ForwardAtAngle(135));
+    jDownArrow.whileTrue(new ForwardAtAngle(180));
+    jDownLeftArrow.whileTrue(new ForwardAtAngle(225));
+    jLeftArrow.whileTrue(new ForwardAtAngle(270));
+    jUpLeftArrow.whileTrue(new ForwardAtAngle(315));
     
-    // kRightBumper.whileTrue(new CollectAlgae());
-    // kLeftBumper.whileTrue(new ScoreAlgae());
+
+    // Operator Commands
     
-    kLeftBumper.whileTrue(new ElevatorUp());
-    kRightBumper.whileTrue(new ElevatorDown());
-    //kButtonX.whileTrue(new ElevatorUpAt3());
-    
+    kHouseButton.whileTrue(new ElevatorUp());
+    kCircleButton.whileTrue(new ElevatorDown());
+    // kButtonX.whileTrue(new ElevatorUpAt3());
+
     kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
     kButtonA.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Setpoint));
     kButtonB.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Setpoint));
@@ -119,8 +143,9 @@ public class OI extends SubsystemBase {
 
     kRightTrigger.whileTrue(new RunIntake());
     kLeftTrigger.whileTrue(new CoralForward());
-    // kRightBumper.whileTrue(new AlgaeCollect());
-    // kLeftBumper.whileTrue(new AlgaeScore());
+    // kCircleButton.whileTrue(new CoralL1Forward());
+    kRightBumper.whileTrue(new AlgaeCollect());
+    kLeftBumper.whileTrue(new AlgaeScore());
 
   }
 

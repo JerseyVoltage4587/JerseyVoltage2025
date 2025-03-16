@@ -9,6 +9,7 @@ import java.util.function.Supplier;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
@@ -17,11 +18,13 @@ import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
 public class SwerveDriveFixed extends Command {
   /** Creates a new SwerveDriveJoysticks. */
   private final SwerveSubsystem m_Swerve = SwerveSubsystem.getInstance();
-    private final Double xSpeedFunction, ySpeedFunction, thetaFunction;
-    private final Boolean fieldOrientedFunction;
-    private final SlewRateLimiter xLimiter, yLimiter, thetaLimiter;
+  private final Double xSpeedFunction, ySpeedFunction, thetaFunction;
+  private final Boolean fieldOrientedFunction;
+  private final SlewRateLimiter xLimiter, yLimiter, thetaLimiter;
+  private int executed = 0;
+  private int finished = 0;
 
-    public SwerveDriveFixed(SwerveSubsystem m_Swerve, Double xSpeedFunction, Double ySpeedFunction,
+  public SwerveDriveFixed(SwerveSubsystem m_Swerve, Double xSpeedFunction, Double ySpeedFunction,
     Double thetaFunction, Boolean fieldOrientedFunction) {
         
     //this.m_Swerve = m_Swerve;
@@ -40,6 +43,7 @@ public class SwerveDriveFixed extends Command {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
+    executed = 0;
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -69,11 +73,16 @@ public class SwerveDriveFixed extends Command {
     SwerveModuleState[] moduleStates = m_Swerve.kinematics.toSwerveModuleStates(newSpeeds);
 
     m_Swerve.setModuleStates(moduleStates);
+
+    SmartDashboard.putNumber("SD Executed", executed++);
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    finished++;
+    SmartDashboard.putNumber("SDFixedFinished", finished);
+    SmartDashboard.putBoolean("SDFixedIntr", interrupted);
     m_Swerve.zeroModules();
   }
 

@@ -34,8 +34,13 @@ public class CoralScorer extends SubsystemBase {
   }
 
   public void coralForward() {
-    coralLeftMotor.set(.1);
-    coralRightMotor.set(.1);
+    coralLeftMotor.set(.2);
+    coralRightMotor.set(.2);
+  }
+
+  public void coralL1Forward() {
+    coralLeftMotor.set(.05);
+    coralRightMotor.set(.2);
   }
 
   // public void coralBackward() {

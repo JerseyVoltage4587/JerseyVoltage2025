@@ -190,6 +190,14 @@ public class SwerveSubsystem extends SubsystemBase {
     setModuleStates(kinematics.toSwerveModuleStates(speeds));
   }
 
+  public double angleDirection(double angle) {
+    if (angle - getGyro() < 180) {
+      return .1;
+    } else {
+      return -.1;
+    }
+  }
+
   @Override
   public void periodic() {
     // This method will be called once per scheduler run

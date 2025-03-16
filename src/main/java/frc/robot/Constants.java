@@ -84,8 +84,8 @@ public final class Constants {
     public static final double kMinSetpoint = 0;
     
     public static final double kRestingSetpoint = 0;
-    public static final double kL1Setpoint = 5;
-    public static final double kProcessorSetpoint = 15;
+    public static final double kL1Setpoint = 20;
+    public static final double kProcessorSetpoint = 0;
     public static final double kL2Setpoint = 35;
     public static final double kL2Algae = 33.3;
     public static final double kL3Setpoint = 60;
@@ -117,6 +117,6 @@ public final class Constants {
 
     public static final int kCoralLeftMotorID = 21; //20
     public static final int kCoralRightMotorID = 20; //21
-    public static final int kAlgaePivotMotorID = 22; //22
-    public static final int kAlgaeScorerMotorID = 23; //23
+    public static final int kAlgaePivotMotorID = 24; //24
+    public static final int kAlgaeScorerMotorID = 22; //22
 }
