@@ -4,6 +4,8 @@
 
 package frc.robot.subsystems.Drivetrain;
 
+import java.util.function.Supplier;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
@@ -11,6 +13,7 @@ import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,17 +24,15 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.OI;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.SwerveConstants;
-import frc.robot.commands.Drivetrain.SwerveDriveJoysticks;
 
 public class SwerveSubsystem extends SubsystemBase {
   /** Creates a new SwerveSubsystem. */
-  static SwerveSubsystem m_Instance = null;
 
-  private SwerveModule frontLeftModule = new SwerveModule(
+  private final SwerveModule frontLeftModule = new SwerveModule(
     SwerveConstants.frontLeftDriveMotor,
     SwerveConstants.frontLeftTurnMotor,
     SwerveConstants.frontLeftDriveMotorReversed,
@@ -41,7 +42,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveConstants.frontLeftAbsoluteEncoderOffesetRad
   );
   
-  private SwerveModule frontRightModule = new SwerveModule(
+  private final SwerveModule frontRightModule = new SwerveModule(
     SwerveConstants.frontRightDriveMotor,
     SwerveConstants.frontRightTurnMotor,
     SwerveConstants.frontRightDriveMotorReversed,
@@ -51,7 +52,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveConstants.frontRightAbsoluteEncoderOffesetRad
   );
 
-  private SwerveModule backLeftModule = new SwerveModule(
+  private final SwerveModule backLeftModule = new SwerveModule(
     SwerveConstants.backLeftDriveMotor,
     SwerveConstants.backLeftTurnMotor,
     SwerveConstants.backLeftDriveMotorReversed,
@@ -61,7 +62,7 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveConstants.backLeftAbsoluteEncoderOffesetRad
   );
 
-  private SwerveModule backRightModule = new SwerveModule(
+  private final SwerveModule backRightModule = new SwerveModule(
     SwerveConstants.backRightDriveMotor,
     SwerveConstants.backRightTurnMotor,
     SwerveConstants.backRightDriveMotorReversed,
@@ -71,13 +72,13 @@ public class SwerveSubsystem extends SubsystemBase {
     SwerveConstants.backRightAbsoluteEncoderOffesetRad
   );
 
-  private AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
+  private final AHRS gyro = new AHRS(NavXComType.kMXP_SPI);
   
   //Position of Swerve Modules relative to center of robot
-  Translation2d frontLeftLocation = new Translation2d(RobotConstants.kRobotLengthMeters / 2, RobotConstants.kRobotWidthMeters / 2);
-  Translation2d frontRightLocation = new Translation2d(RobotConstants.kRobotLengthMeters / 2, -RobotConstants.kRobotWidthMeters / 2);
-  Translation2d backLeftLocation = new Translation2d(-RobotConstants.kRobotLengthMeters / 2, RobotConstants.kRobotWidthMeters / 2);
-  Translation2d backRightLocation = new Translation2d(-RobotConstants.kRobotLengthMeters / 2, -RobotConstants.kRobotWidthMeters / 2);
+  final Translation2d frontLeftLocation = new Translation2d(RobotConstants.kRobotLengthMeters / 2, RobotConstants.kRobotWidthMeters / 2);
+  final Translation2d frontRightLocation = new Translation2d(RobotConstants.kRobotLengthMeters / 2, -RobotConstants.kRobotWidthMeters / 2);
+  final Translation2d backLeftLocation = new Translation2d(-RobotConstants.kRobotLengthMeters / 2, RobotConstants.kRobotWidthMeters / 2);
+  final Translation2d backRightLocation = new Translation2d(-RobotConstants.kRobotLengthMeters / 2, -RobotConstants.kRobotWidthMeters / 2);
 
   //Kinematics object: ChassisSpeeds -> SwerveModuleStates
   public SwerveDriveKinematics kinematics = new SwerveDriveKinematics(
@@ -161,6 +162,10 @@ public class SwerveSubsystem extends SubsystemBase {
     backRightModule.zeroMotors();
   }
 
+  public void setChassisSpeeds(ChassisSpeeds speeds)
+  {
+
+  }
   public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotConstants.kMaxSpeed);
     
@@ -180,23 +185,44 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public ChassisSpeeds getCurrentSpeeds() {
     return ChassisSpeeds.fromRobotRelativeSpeeds(
-    -OI.getInstance().j.getRawAxis(1),
-    -OI.getInstance().j.getRawAxis(0),
-    OI.getInstance().j.getRawAxis(2), 
-    getGyroToRotation2d());
-  }
+      kinematics.toChassisSpeeds(
+        frontLeftModule.getState(),
+        frontRightModule.getState(),
+        backLeftModule.getState(),
+        backRightModule.getState()),
+      getGyroToRotation2d());
 
+  }
+  
   public void driveRobotRelative(ChassisSpeeds speeds) {
     setModuleStates(kinematics.toSwerveModuleStates(speeds));
   }
 
+  public void drive(Supplier<Double> xSpeedFunction, Supplier<Double> ySpeedFunction,
+      Supplier<Double> thetaFunction, Supplier<Boolean> fieldOrientedFunction)
+    {
+      setModuleStates(
+        kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(
+          MathUtil.applyDeadband(xSpeedFunction.get(), RobotConstants.kDeadBand),
+          MathUtil.applyDeadband(ySpeedFunction.get(), RobotConstants.kDeadBand),
+          MathUtil.applyDeadband(thetaFunction.get(), RobotConstants.kDeadBand),
+          fieldOrientedFunction.get() ? getGyroToRotation2d() : Rotation2d.kZero))
+      );
+    }
+
   public double angleDirection(double angle) {
-    if (angle - getGyro() < 180) {
+    if (angleDistance(angle) < 180) {
       return .1;
     } else {
       return -.1;
     }
   }
+
+  public double angleDistance(double angle) {
+    return Rotation2d.fromDegrees(angle).minus(getGyroToRotation2d()).getDegrees();
+  }
+
+
 
   @Override
   public void periodic() {
@@ -221,17 +247,26 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putString("Swerve Spds",this.getCurrentSpeeds().toString());
   }
 
+  //Command Methods
+  public Command DriveCommand(Supplier<Double> xSpeedFunction, Supplier<Double> ySpeedFunction,
+    Supplier<Double> thetaFunction, Supplier<Boolean> fieldOrientedFunction)
+  {
+    return runEnd(() -> drive(xSpeedFunction, ySpeedFunction, thetaFunction, fieldOrientedFunction), () -> zeroModules());
+  }
 
+  public Command ToAngleCommand(Supplier<Double> angle)
+  {
+    return DriveCommand(() -> 0.0, () -> 0.0, () -> angleDirection(angle.get()), () -> false)
+          .until(() -> angleDistance(angle.get()) < 1);
+  }
 
+  public Command ForwardAtAngleCommand(Supplier<Double> angle)
+  {
+    return ToAngleCommand(angle).andThen(DriveCommand( () -> 0.1, () -> 0.0, () -> 0.0, () -> false));
+  }
   
-  public static SwerveSubsystem getInstance() {
-    if (m_Instance == null) {
-      synchronized (SwerveSubsystem.class) {
-        if (m_Instance == null) {
-          m_Instance = new SwerveSubsystem();
-        }
-      }
-    }
-    return m_Instance;
+  public Command ForwardAtAngleCommand(Supplier<Double> angle, double seconds)
+  {
+    return ToAngleCommand(angle).andThen(DriveCommand( () -> 0.1, () -> 0.0, () -> 0.0, () -> false).withTimeout(seconds));
   }
 }
