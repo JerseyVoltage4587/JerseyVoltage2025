@@ -63,7 +63,7 @@ public final class Constants {
     public static final double kRobotLengthMeters = Units.inchesToMeters(29);
   
     public static final double kMaxSpeed = 4.5;
-    public static final double kDeadBand = 0.1;
+    public static final double kDeadBand = 0.05;
     public static final double kSwerveMaxAcceleration = 0.5;
     public static final double kSwerveMaxAngularAcceleration = 0.5;
 
@@ -101,7 +101,7 @@ public final class Constants {
     public static final double kMaxOutput = 0.5;
 
     public static final double kElevatorVolts = 0;
-    public static final double kElevatorGravityVolts = 0.05; //.1
+    public static final double kElevatorGravityVolts = 0.05 * 12; //.1
     public static final double kElevatorVoltsPerSecond = 0.135; //.175
     public static final double kElevatorVoltsPerSecondSquared = 0.001;
 

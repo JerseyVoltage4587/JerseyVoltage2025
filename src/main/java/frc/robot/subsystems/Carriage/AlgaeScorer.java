@@ -7,6 +7,7 @@ package frc.robot.subsystems.Carriage;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.SparkMax;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -35,14 +36,17 @@ public class AlgaeScorer extends SubsystemBase {
     algaeScorerMotor.set(0);
   }
 
-  public static AlgaeScorer getInstance() {
-    if (m_Instance == null) {
-      synchronized (AlgaeScorer.class) {
-        if (m_Instance == null) {
-          m_Instance = new AlgaeScorer();
-        }
-      }
-    }
-    return m_Instance;
+  // Command Methods
+
+  public Command AlgaeCollectCommand() {
+    return runEnd(() -> algaeCollect(), () -> zeroAlgaeScoreMotor());
+  }
+
+  public Command AlgaeScoreCommand() {
+    return runEnd(() -> algaeScore(), () -> zeroAlgaeScoreMotor());
+  }
+
+  public Command ZeroAlgaeScorerMotorCommand() {
+    return runOnce(() -> zeroAlgaeScoreMotor());
   }
 }

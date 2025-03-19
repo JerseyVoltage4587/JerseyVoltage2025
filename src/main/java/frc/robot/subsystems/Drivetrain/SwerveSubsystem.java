@@ -107,7 +107,8 @@ public class SwerveSubsystem extends SubsystemBase {
 
   //Constructor
   public SwerveSubsystem() {
-    
+    super();
+
     new Thread(() -> {
       try {
         Thread.sleep(1000);
@@ -201,13 +202,29 @@ public class SwerveSubsystem extends SubsystemBase {
   public void drive(Supplier<Double> xSpeedFunction, Supplier<Double> ySpeedFunction,
       Supplier<Double> thetaFunction, Supplier<Boolean> fieldOrientedFunction)
     {
-      setModuleStates(
-        kinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(
+      ChassisSpeeds spds;
+
+      if (fieldOrientedFunction.get()) {
+        spds = ChassisSpeeds.fromFieldRelativeSpeeds(
           MathUtil.applyDeadband(xSpeedFunction.get(), RobotConstants.kDeadBand),
           MathUtil.applyDeadband(ySpeedFunction.get(), RobotConstants.kDeadBand),
           MathUtil.applyDeadband(thetaFunction.get(), RobotConstants.kDeadBand),
-          fieldOrientedFunction.get() ? getGyroToRotation2d() : Rotation2d.kZero))
+          getGyroToRotation2d()
+        );
+      } else {
+        spds = ChassisSpeeds.fromRobotRelativeSpeeds(
+          MathUtil.applyDeadband(xSpeedFunction.get() * 0.25, RobotConstants.kDeadBand),
+          MathUtil.applyDeadband(ySpeedFunction.get() * 0.25, RobotConstants.kDeadBand),
+          MathUtil.applyDeadband(thetaFunction.get() * 0.5, RobotConstants.kDeadBand),
+          getGyroToRotation2d()
+        );
+      }
+      
+      setModuleStates(
+        kinematics.toSwerveModuleStates(spds)
       );
+      SmartDashboard.putString("DriveSpds", spds.toString());
+      SmartDashboard.putBoolean("FieldOrient", fieldOrientedFunction.get());
     }
 
   public double angleDirection(double angle) {

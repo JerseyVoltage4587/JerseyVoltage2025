@@ -10,8 +10,8 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkBase.PersistMode;
 import com.revrobotics.spark.SparkBase.ResetMode;
-import edu.wpi.first.math.controller.ArmFeedforward; 
-
+import edu.wpi.first.math.controller.ArmFeedforward;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -44,14 +44,17 @@ public class AlgaePivot extends SubsystemBase {
     algaePivotMotor.set(0);
   }
 
-  public static AlgaePivot getInstance() {
-    if (m_Instance == null) {
-      synchronized (AlgaePivot.class) {
-        if (m_Instance == null) {
-          m_Instance = new AlgaePivot();
-        }
-      }
-    }
-    return m_Instance;
+  // Command Methods
+
+  public Command AlgaePivotInCommand() {
+    return runEnd(() -> algaePivotIn(), () -> zeroAlgaePivotMotor());
+  }
+
+  public Command AlgaePivotOutCommand() {
+    return runEnd(() -> algaePivotOut(), () -> zeroAlgaePivotMotor());
+  }
+
+  public Command ZeroAlgaePivotMotorCommand() {
+    return runOnce(() -> zeroAlgaePivotMotor());
   }
 }

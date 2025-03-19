@@ -4,22 +4,17 @@
 
 package frc.robot;
 
-import frc.robot.commands.Autos.ScoreL4;
-import frc.robot.commands.Carriage.AlgaePivot.AlgaePivotIn;
-import frc.robot.commands.Carriage.AlgaePivot.AlgaePivotOut;
-import frc.robot.commands.Carriage.AlgaeScorer.AlgaeCollect;
-import frc.robot.commands.Carriage.AlgaeScorer.AlgaeScore;
-import frc.robot.commands.Carriage.CoralScorer.CoralForward;
-import frc.robot.commands.Climber.ClimberIn;
-import frc.robot.commands.Climber.ClimberOut;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.commands.Autos.CoralStationIntake;
 import frc.robot.commands.Elevator.ElevatorDown;
 import frc.robot.commands.Elevator.ElevatorUp;
 import frc.robot.commands.Elevator.HoldPosition;
 import frc.robot.commands.Elevator.ProfiledElevatorDistance;
-import frc.robot.commands.Intake.RunIntake;
+import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.Elevator;
+import frc.robot.subsystems.Intake;
+import frc.robot.subsystems.Carriage.AlgaePivot;
+import frc.robot.subsystems.Carriage.AlgaeScorer;
+import frc.robot.subsystems.Carriage.CoralScorer;
 import frc.robot.subsystems.Drivetrain.SwerveSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -27,10 +22,12 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.math.filter.Debouncer.DebounceType;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
@@ -45,33 +42,38 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
 
-  private final SwerveSubsystem m_swervesubsystem = new SwerveSubsystem();
-  Elevator m_elevator = Elevator.getInstance();
+  private static final SwerveSubsystem m_swervesubsystem = new SwerveSubsystem();
+  private static final Intake m_intake = new Intake();
+  private static final Climber m_climber = new Climber();
+  private static final CoralScorer m_coralscorer = new CoralScorer();
+  private static final AlgaeScorer m_algaescorer = new AlgaeScorer();
+  private static final AlgaePivot m_algaepivot = new AlgaePivot();
+  private static final Elevator m_elevator = new Elevator();
+
+  // Elevator m_elevator = Elevator.getInstance();
   private final SendableChooser<Command> autoChooser;
 
   private final Joystick j = new Joystick(0);
   private final Joystick k = new Joystick(1);
+  private final Trigger jRightTrigger = new JoystickButton(j, 8);
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
   
 
+  
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
 
-    final Command swerveDef = m_swervesubsystem.DriveCommand(
+    m_swervesubsystem.setDefaultCommand(m_swervesubsystem.DriveCommand(
       () -> -j.getRawAxis(1),
       () -> -j.getRawAxis(0),
       () -> -j.getRawAxis(2),
-      () -> true);
-    SmartDashboard.putData("SwevreDefault", swerveDef);
-    m_swervesubsystem.setDefaultCommand(swerveDef);
+      () -> jRightTrigger.getAsBoolean()
+    ));
 
     m_elevator.setDefaultCommand(new HoldPosition());
     
-    CameraServer.startAutomaticCapture();
-
-    NamedCommands.registerCommand("ScoreL4", new ScoreL4());
-    NamedCommands.registerCommand("CoralStationIntake", new CoralStationIntake());
+    //CameraServer.startAutomaticCapture();
 
     autoChooser = AutoBuilder.buildAutoChooser();
     autoChooser.addOption("LeaveOnly",
@@ -98,7 +100,7 @@ public class RobotContainer {
 
   private void configureButtonBindings()
   {
-    Trigger jButtonY, jButtonX, jButtonA, jButtonB, jLeftBumper, jRightBumper, jLeftTrigger, jRightTrigger,
+    Trigger jButtonY, jButtonX, jButtonA, jButtonB, jLeftBumper, jRightBumper, jLeftTrigger,
     jMinusButton, jPlusButton, jLeftStickButton, jRightStickButton;
   
     Trigger kButtonY, kButtonX, kButtonA, kButtonB, kLeftBumper, kRightBumper, kLeftTrigger, kRightTrigger,
@@ -116,7 +118,6 @@ public class RobotContainer {
     jLeftBumper = new JoystickButton(j, 5);
     jRightBumper = new JoystickButton(j, 6);
     jLeftTrigger = new JoystickButton(j, 7);
-    jRightTrigger = new JoystickButton(j, 8);
     jMinusButton = new JoystickButton(j, 9);
     jPlusButton = new JoystickButton(j, 10);
     jLeftStickButton = new JoystickButton(j, 11);
@@ -154,12 +155,8 @@ public class RobotContainer {
 
     //Robot Commands
     //Driver Commands
-    final Command robotLeft = m_swervesubsystem.DriveCommand(() -> 0.0, () -> 0.1, () -> 0.0, () -> false);
-    final Command robotRight = m_swervesubsystem.DriveCommand(() -> 0.0, () -> -0.1, () -> 0.0, () -> false);
-    SmartDashboard.putData("CmdRobotLeft", robotLeft);
-    SmartDashboard.putData("CmdRobotRight", robotLeft);
-    jLeftTrigger.whileTrue(robotLeft);
-    jRightTrigger.whileTrue(robotRight);
+    jButtonY.whileTrue(m_swervesubsystem.DriveCommand(() -> 0.0, () -> 0.1, () -> 0.0, () -> false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    jButtonA.onTrue(m_swervesubsystem.DriveCommand(() -> 0.0, () -> -0.1, () -> 0.0, () -> false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     jUpArrow.whileTrue(m_swervesubsystem.ForwardAtAngleCommand(() -> {return 0.0;}));
     jUpRightArrow.whileTrue(m_swervesubsystem.ForwardAtAngleCommand(() -> 45.0));
@@ -173,28 +170,39 @@ public class RobotContainer {
 
     // Operator Commands
     
-    kHouseButton.whileTrue(new ElevatorUp());
-    kCircleButton.whileTrue(new ElevatorDown());
-    // kButtonX.whileTrue(new ElevatorUpAt3());
+    // kHouseButton.whileTrue(new ElevatorUp());
+    // kCircleButton.whileTrue(new ElevatorDown());
+    // // kButtonX.whileTrue(new ElevatorUpAt3());
 
-    kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
-    kButtonA.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Setpoint));
-    kButtonB.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Setpoint));
-    kButtonY.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL4Setpoint));
-    kLeftArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kRestingSetpoint));
-    kDownArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Algae));
-    kUpArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Algae));
+    // kButtonX.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL1Setpoint));
+    // kButtonA.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Setpoint));
+    // kButtonB.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Setpoint));
+    // kButtonY.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL4Setpoint));
+    // kLeftArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kRestingSetpoint));
+    // kDownArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL2Algae));
+    // kUpArrow.whileTrue(new ProfiledElevatorDistance(ElevatorConstants.kL3Algae));
 
-    kPlusButton.whileTrue(new ClimberIn());
-    kMinusButton.whileTrue(new ClimberOut());
-    kRightStickButton.whileTrue(new AlgaePivotOut());
-    kLeftStickButton.whileTrue(new AlgaePivotIn());
+    kHouseButton.whileTrue(m_elevator.ElevatorUpCommand());
+    kCircleButton.whileTrue(m_elevator.ElevatorDownCommand());
 
-    kRightTrigger.whileTrue(new RunIntake());
-    kLeftTrigger.whileTrue(new CoralForward());
-    // kCircleButton.whileTrue(new CoralL1Forward());
-    kRightBumper.whileTrue(new AlgaeCollect());
-    kLeftBumper.whileTrue(new AlgaeScore());
+    kButtonX.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kL1Setpoint));
+    kButtonA.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kL2Setpoint));
+    kButtonB.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kL3Setpoint));
+    kButtonY.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kL4Setpoint));
+    kLeftArrow.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kRestingSetpoint));
+    kDownArrow.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kL2Algae));
+    kUpArrow.whileTrue(m_elevator.ProfiledElevatorDistanceCommand(ElevatorConstants.kL3Algae));
+
+    kPlusButton.whileTrue(m_climber.ClimberInCommand());
+    kMinusButton.whileTrue(m_climber.ClimberOutCommand());
+    kRightStickButton.whileTrue(m_algaepivot.AlgaePivotOutCommand());
+    kLeftStickButton.whileTrue(m_algaepivot.AlgaePivotInCommand());
+
+    kRightTrigger.whileTrue(m_intake.RunIntakeCommand());
+    kLeftTrigger.whileTrue(m_coralscorer.CoralForwardCommand());
+    // kCircleButton.whileTrue(m_coralscorer.CoralL1ForwardCommand());
+    kRightBumper.whileTrue(m_algaescorer.AlgaeCollectCommand());
+    kLeftBumper.whileTrue(m_algaescorer.AlgaeScoreCommand());
   }
 
   /**
@@ -208,7 +216,7 @@ public class RobotContainer {
   }
 
   //Boring template stuff
-  public SwerveSubsystem getSwerve()
+  public static SwerveSubsystem getSwerve()
   {
     return m_swervesubsystem;
   }

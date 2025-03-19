@@ -17,8 +17,10 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.State;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 import frc.robot.Constants.ElevatorConstants;
@@ -35,6 +37,8 @@ public class Elevator extends SubsystemBase {
   private static RelativeEncoder rightElevatorEncoder = rightElevatorMotor.getEncoder();
   private static SparkMaxConfig leftElevatorConfig = new SparkMaxConfig();
   private static SparkMaxConfig rightElevatorConfig = new SparkMaxConfig();
+
+  private static DigitalInput elevatorBaseLimitSwitch = new DigitalInput(0);
   
   // private static SparkClosedLoopController leftElevatorClosedLoopController;
   
@@ -99,6 +103,10 @@ public class Elevator extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+
+    if (!elevatorBaseLimitSwitch.get()) {
+      leftElevatorEncoder.setPosition(0);
+    }
 
     SmartDashboard.putNumber("LeftElevatorEncoderValue", leftElevatorEncoder.getPosition());
     SmartDashboard.putNumber("RightElevatorEncoderValue", rightElevatorEncoder.getPosition());
@@ -216,5 +224,42 @@ public class Elevator extends SubsystemBase {
       }
     }
     return m_Instance;
+  }
+
+  // Command Methods
+
+  public Command ElevatorDownCommand() {
+    return runEnd(() -> elevatorDown(), () -> zeroMotors());
+  }
+
+  public Command ElevatorUpCommand() {
+    return runEnd(() -> elevatorUp(), () -> zeroMotors());
+  }
+
+  public Command ElevatorUpAt3Command() {
+    return runEnd(() -> elevatorUpAt3(), () -> zeroMotors());
+  }
+
+  public Command ZeroElevatorMotorCommand() {
+    return runOnce(() -> zeroMotors());
+  }
+
+  public Command ProfiledElevatorDistanceCommand(double distance) {
+    return runEnd(() -> profiledElevatorDistance(distance), () -> zeroMotors())
+    .beforeStarting(() -> profiledElevatorDistanceInit())
+    .until(() -> profiledElevatorDistanceFinished());
+  }
+
+  public Command ProfiledElevatorDistanceStopCommand() {
+    return runEnd(() -> profiledElevatorDistance(profiledElevatorStopInit()), () -> zeroMotors())
+    .until(() -> profiledElevatorDistanceFinished());
+  }
+
+  public Command GoToPositionCommand(double position) {
+    return runEnd(() -> goToPosition(position), () -> zeroMotors());
+  }
+
+  public Command HoldPositionCommand() {
+    return runEnd(() -> goToPosition(getEncoderValue()), () -> zeroMotors());
   }
 }

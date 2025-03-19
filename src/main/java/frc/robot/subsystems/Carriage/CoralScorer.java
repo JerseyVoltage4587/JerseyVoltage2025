@@ -12,6 +12,7 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -53,14 +54,17 @@ public class CoralScorer extends SubsystemBase {
     coralRightMotor.set(0);
   }
 
-  public static CoralScorer getInstance() {
-    if (m_Instance == null) {
-      synchronized (CoralScorer.class) {
-        if (m_Instance == null) {
-          m_Instance = new CoralScorer();
-        }
-      }
-    }
-    return m_Instance;
+  // Command Methods
+
+  public Command CoralForwardCommand() {
+    return runEnd(() -> coralForward(), () -> zeroCoralMotors());
+  }
+
+  public Command CoralL1ForwardCommand() {
+    return runEnd(() -> coralL1Forward(), () -> zeroCoralMotors());
+  }
+
+  public Command ZeroCoralScorerMotorCommand() {
+    return runOnce(() -> zeroCoralMotors());
   }
 }

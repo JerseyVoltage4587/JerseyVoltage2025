@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -42,14 +43,13 @@ public class Intake extends SubsystemBase {
     intakeMotor.set(0);
   }
 
-  public static Intake getInstance() {
-    if (m_Instance == null) {
-      synchronized (Intake.class) {
-        if (m_Instance == null) {
-          m_Instance = new Intake();
-        }
-      }
-    }
-    return m_Instance;
+  //Command Methods
+
+  public Command RunIntakeCommand() {
+    return runEnd(() -> runIntake(), () -> zeroMotor());
+  }
+
+  public Command ZeroIntakeMotorCommand() {
+    return runOnce(() -> zeroMotor());
   }
 }

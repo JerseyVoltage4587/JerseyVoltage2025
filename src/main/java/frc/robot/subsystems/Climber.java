@@ -12,6 +12,7 @@ import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
@@ -47,14 +48,17 @@ public class Climber extends SubsystemBase {
     climberMotor.set(0);
   }
 
-  public static Climber getInstance() {
-    if (m_Instance == null) {
-      synchronized (Climber.class) {
-        if (m_Instance == null) {
-          m_Instance = new Climber();
-        }
-      }
-    }
-    return m_Instance;
+  //Command Methods
+
+  public Command ClimberInCommand() {
+    return runEnd(() -> climberIn(), () -> zeroMotor());
+  }
+
+  public Command ClimberOutCommand() {
+    return runEnd(() -> climberOut(), () -> zeroMotor());
+  }
+
+  public Command ZeroClimberMotorCommand() {
+    return runOnce(() -> zeroMotor());
   }
 }
