@@ -4,9 +4,12 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import edu.wpi.first.wpilibj2.command.Command;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -101,11 +104,21 @@ public final class Constants {
     public static final double kMaxOutput = 0.5;
 
     public static final double kElevatorVolts = 0;
-    public static final double kElevatorGravityVolts = 0.05 * 12; //.1
+    public static final double kElevatorGravityVolts = 0.05; //.1
     public static final double kElevatorVoltsPerSecond = 0.135; //.175
     public static final double kElevatorVoltsPerSecondSquared = 0.001;
 
   }
+
+    //Algae Pivot PID values
+
+    public static final double kAlgaePivotP = 0.06;
+    public static final double kAlgaePivotI = 0;
+    public static final double kAlgaePivotD = 0;
+    public static final double kAlgaePivotGravity = -0.1;
+    public static final double kAlgaePivotUpSetpoint = 0;
+    public static final double kAlgaeLoadedSetpoint = 1.25;
+    public static final double kAlgaePivotDownSetpoint = 3.4;
 
     //IDs
     public static final int kLeftElevatorMotorID = 11; //11
@@ -115,8 +128,8 @@ public final class Constants {
 
     public static final int kClimberMotorID = 40; //40
 
-    public static final int kCoralLeftMotorID = 21; //20
-    public static final int kCoralRightMotorID = 20; //21
+    public static final int kCoralLeftMotorID = 20; //20
+    // public static final int kCoralRightMotorID = 21; //21
     public static final int kAlgaePivotMotorID = 24; //24
     public static final int kAlgaeScorerMotorID = 22; //22
 }

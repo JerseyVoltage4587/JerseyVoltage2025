@@ -102,7 +102,7 @@ public class SwerveSubsystem extends SubsystemBase {
     backRightModule.getState()
   };
     
-  private SwerveDriveOdometry odometer = new SwerveDriveOdometry(kinematics, new Rotation2d(0), getModulePositions);
+  private SwerveDriveOdometry odometer = new SwerveDriveOdometry(kinematics, new Rotation2d(getGyro()), getModulePositions);
   RobotConfig config;
 
   //Constructor
@@ -129,7 +129,7 @@ public class SwerveSubsystem extends SubsystemBase {
       this::getCurrentSpeeds,
       (speeds, feedforwards) -> driveRobotRelative(speeds),
       new PPHolonomicDriveController(
-        new PIDConstants(0, 0, 0),
+        new PIDConstants(1.0, 0.0, 0.0),
         new PIDConstants(SwerveConstants.kSwerveP, SwerveConstants.kSwerveI, SwerveConstants.kSwerveD)
       ),
       config,
@@ -181,7 +181,9 @@ public class SwerveSubsystem extends SubsystemBase {
   }
 
   public void resetPose(Pose2d pose) {
-    odometer.resetPose(pose);
+    if (pose != null) {
+      odometer.resetPose(pose);
+    }
   }
 
   public ChassisSpeeds getCurrentSpeeds() {
@@ -204,7 +206,7 @@ public class SwerveSubsystem extends SubsystemBase {
     {
       ChassisSpeeds spds;
 
-      if (fieldOrientedFunction.get()) {
+      if (!fieldOrientedFunction.get()) {
         spds = ChassisSpeeds.fromFieldRelativeSpeeds(
           MathUtil.applyDeadband(xSpeedFunction.get(), RobotConstants.kDeadBand),
           MathUtil.applyDeadband(ySpeedFunction.get(), RobotConstants.kDeadBand),
@@ -224,7 +226,7 @@ public class SwerveSubsystem extends SubsystemBase {
         kinematics.toSwerveModuleStates(spds)
       );
       SmartDashboard.putString("DriveSpds", spds.toString());
-      SmartDashboard.putBoolean("FieldOrient", fieldOrientedFunction.get());
+      SmartDashboard.putBoolean("FieldOrient", !fieldOrientedFunction.get());
     }
 
   public double angleDirection(double angle) {
@@ -239,7 +241,7 @@ public class SwerveSubsystem extends SubsystemBase {
     return Rotation2d.fromDegrees(angle).minus(getGyroToRotation2d()).getDegrees();
   }
 
-
+  
 
   @Override
   public void periodic() {

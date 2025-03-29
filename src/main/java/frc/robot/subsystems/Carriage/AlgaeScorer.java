@@ -25,11 +25,11 @@ public class AlgaeScorer extends SubsystemBase {
   }
 
   public void algaeCollect() {
-    algaeScorerMotor.set(-.1);
+    algaeScorerMotor.set(.9);
   }
 
   public void algaeScore() {
-    algaeScorerMotor.set(.1);
+    algaeScorerMotor.set(-.9);
   }
 
   public void zeroAlgaeScoreMotor() {

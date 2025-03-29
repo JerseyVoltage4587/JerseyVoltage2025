@@ -7,13 +7,7 @@
         {
           "type": "path",
           "data": {
-            "pathName": "RedLeft1CoralPath"
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "ScoreL4"
+            "pathName": "StraightDrivePath"
           }
         }
       ]

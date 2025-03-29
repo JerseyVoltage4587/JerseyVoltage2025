@@ -38,7 +38,7 @@ public class Elevator extends SubsystemBase {
   private static SparkMaxConfig leftElevatorConfig = new SparkMaxConfig();
   private static SparkMaxConfig rightElevatorConfig = new SparkMaxConfig();
 
-  private static DigitalInput elevatorBaseLimitSwitch = new DigitalInput(0);
+  private static DigitalInput elevatorBaseLimitSwitch = new DigitalInput(9);
   
   // private static SparkClosedLoopController leftElevatorClosedLoopController;
   
@@ -110,6 +110,7 @@ public class Elevator extends SubsystemBase {
 
     SmartDashboard.putNumber("LeftElevatorEncoderValue", leftElevatorEncoder.getPosition());
     SmartDashboard.putNumber("RightElevatorEncoderValue", rightElevatorEncoder.getPosition());
+    SmartDashboard.putBoolean("LimitSwitchValue", elevatorBaseLimitSwitch.get());
     SmartDashboard.putData(this);
   }
 
@@ -178,7 +179,11 @@ public class Elevator extends SubsystemBase {
   public boolean profiledElevatorDistanceFinished()
   {
     currentTime = elevatorTimer.get();
-    return elevatorProfile.isFinished(currentTime) && (Math.abs(currentSetpoint.position - leftElevatorEncoder.getPosition()) < 0.1 );
+    if (currentSetpoint != null) {
+      return elevatorProfile.isFinished(currentTime) && (Math.abs(currentSetpoint.position - leftElevatorEncoder.getPosition()) < 0.1 );
+    } else {
+      return false;
+    }
   }
 
   public void elevatorUp() {
