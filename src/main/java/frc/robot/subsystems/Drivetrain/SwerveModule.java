@@ -102,14 +102,21 @@ public class SwerveModule {
     turnMotor.set(0);
   }
 
-  public void setDesiredState(SwerveModuleState desiredState) {
+  public void setDesiredState(SwerveModuleState desiredState)
+  {
+    setDesiredState(desiredState, false);
+  }
+
+  private double scaleFactor = 4.5;
+
+  public void setDesiredState(SwerveModuleState desiredState, boolean planned) {
     desiredState = SwerveModuleState.optimize(desiredState, getState().angle);
     if (Math.abs(desiredState.speedMetersPerSecond) < 0.001) {
       driveMotor.set(0);
     }
     else
     {
-      driveMotor.set(desiredState.speedMetersPerSecond);
+      driveMotor.set(desiredState.speedMetersPerSecond / (planned ? RobotConstants.kMaxSpeed : 1));
     }
     
     turnMotor.set(turnPIDController.calculate(getTurnPosition(), desiredState.angle.getRadians()));

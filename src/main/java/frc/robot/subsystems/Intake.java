@@ -13,6 +13,7 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -33,7 +34,10 @@ public class Intake extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-  }
+        // if (this.getCurrentCommand() != null)
+        //   SmartDashboard.putData("Intake Cmd", this.getCurrentCommand());
+
+ }
 
   public void runIntake() {
     intakeMotor.set(.25);
@@ -46,10 +50,10 @@ public class Intake extends SubsystemBase {
   //Command Methods
 
   public Command RunIntakeCommand() {
-    return runEnd(() -> runIntake(), () -> zeroMotor());
+    return runEnd(() -> runIntake(), () -> zeroMotor()).withName("RunIntake");
   }
 
   public Command ZeroIntakeMotorCommand() {
-    return runOnce(() -> zeroMotor());
+    return run(() -> zeroMotor()).withName("ZeroIntake");
   }
 }

@@ -112,6 +112,9 @@ public class Elevator extends SubsystemBase {
     SmartDashboard.putNumber("RightElevatorEncoderValue", rightElevatorEncoder.getPosition());
     SmartDashboard.putBoolean("LimitSwitchValue", elevatorBaseLimitSwitch.get());
     SmartDashboard.putData(this);
+    // if (this.getCurrentCommand() != null)
+    //   SmartDashboard.putData("Elev Cmd", this.getCurrentCommand());
+
   }
 
   public double getEncoderValue() {

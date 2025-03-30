@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.Command.InterruptionBehavior;
 import frc.robot.Constants.RobotConstants;
 import frc.robot.Constants.SwerveConstants;
 
@@ -105,43 +106,44 @@ public class SwerveSubsystem extends SubsystemBase {
   private SwerveDriveOdometry odometer = new SwerveDriveOdometry(kinematics, new Rotation2d(getGyro()), getModulePositions);
   RobotConfig config;
 
+  private int counter = 0;
   //Constructor
   public SwerveSubsystem() {
     super();
 
-    new Thread(() -> {
+//    new Thread(() -> {
       try {
         Thread.sleep(1000);
         zeroGyro();
+        // try {
+        config = RobotConfig.fromGUISettings();
+        // } catch (Exception e) {
+        //   e.printStackTrace();
+        // }
+    
+        AutoBuilder.configure(
+          this::getPose,
+          this::resetPose,
+          this::getCurrentSpeeds,
+          (speeds, feedforwards) -> driveRobotRelative(speeds, true),
+          new PPHolonomicDriveController(
+            new PIDConstants(0.0, 0.0, 0.0),
+            new PIDConstants(0.0, 0.0, 0.0)
+          ),
+          config,
+          () -> {
+            var alliance = DriverStation.getAlliance();
+            if (alliance.isPresent()) {
+              return alliance.get() == DriverStation.Alliance.Red;
+            }
+            return false;
+          },
+          this
+        );
       } catch (Exception e) {
       }
-    }).start();
+  //  }).start();
 
-    try {
-      config = RobotConfig.fromGUISettings();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-
-    AutoBuilder.configure(
-      this::getPose,
-      this::resetPose,
-      this::getCurrentSpeeds,
-      (speeds, feedforwards) -> driveRobotRelative(speeds),
-      new PPHolonomicDriveController(
-        new PIDConstants(1.0, 0.0, 0.0),
-        new PIDConstants(SwerveConstants.kSwerveP, SwerveConstants.kSwerveI, SwerveConstants.kSwerveD)
-      ),
-      config,
-      () -> {
-        var alliance = DriverStation.getAlliance();
-        if (alliance.isPresent()) {
-          return alliance.get() == DriverStation.Alliance.Red;
-        }
-        return false;
-      },
-      this
-    );
   }
 
   public void zeroGyro() {
@@ -163,17 +165,26 @@ public class SwerveSubsystem extends SubsystemBase {
     backRightModule.zeroMotors();
   }
 
+  public void dummyFunc() {
+    SmartDashboard.putNumber("dummyCount", counter++);
+  }
+
   public void setChassisSpeeds(ChassisSpeeds speeds)
   {
 
   }
+
   public void setModuleStates(SwerveModuleState[] desiredStates) {
-    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, RobotConstants.kMaxSpeed);
+    setModuleStates(desiredStates, false);
+  }
+
+  public void setModuleStates(SwerveModuleState[] desiredStates, boolean planned) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, planned ? RobotConstants.kMaxSpeed : 1.0);
     
-    frontLeftModule.setDesiredState(desiredStates[0]);
-    frontRightModule.setDesiredState(desiredStates[1]);
-    backLeftModule.setDesiredState(desiredStates[2]);
-    backRightModule.setDesiredState(desiredStates[3]);
+    frontLeftModule.setDesiredState(desiredStates[0], planned);
+    frontRightModule.setDesiredState(desiredStates[1], planned);
+    backLeftModule.setDesiredState(desiredStates[2], planned);
+    backRightModule.setDesiredState(desiredStates[3], planned);
   }
 
   public Pose2d getPose() {
@@ -196,9 +207,12 @@ public class SwerveSubsystem extends SubsystemBase {
       getGyroToRotation2d());
 
   }
-  
   public void driveRobotRelative(ChassisSpeeds speeds) {
-    setModuleStates(kinematics.toSwerveModuleStates(speeds));
+    driveRobotRelative(speeds, false);
+  }
+
+  public void driveRobotRelative(ChassisSpeeds speeds, boolean planned) {
+    setModuleStates(kinematics.toSwerveModuleStates(speeds), planned);
   }
 
   public void drive(Supplier<Double> xSpeedFunction, Supplier<Double> ySpeedFunction,
@@ -231,9 +245,9 @@ public class SwerveSubsystem extends SubsystemBase {
 
   public double angleDirection(double angle) {
     if (angleDistance(angle) < 180) {
-      return .1;
+      return .2;
     } else {
-      return -.1;
+      return -.2;
     }
   }
 
@@ -260,10 +274,10 @@ public class SwerveSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("Back Right Motor Rad", backRightModule.getTurnPosition());
     SmartDashboard.putNumber("Gyro", getGyro());
 
-    if (this.getCurrentCommand() != null)
-      SmartDashboard.putData("Swerve Cmd", this.getCurrentCommand());
+    // if (this.getCurrentCommand() != null)
+    //   SmartDashboard.putData("Swerve Cmd", this.getCurrentCommand());
 
-    SmartDashboard.putString("Swerve Spds",this.getCurrentSpeeds().toString());
+    // SmartDashboard.putString("Swerve Spds",this.getCurrentSpeeds().toString());
   }
 
   //Command Methods
@@ -271,6 +285,11 @@ public class SwerveSubsystem extends SubsystemBase {
     Supplier<Double> thetaFunction, Supplier<Boolean> fieldOrientedFunction)
   {
     return runEnd(() -> drive(xSpeedFunction, ySpeedFunction, thetaFunction, fieldOrientedFunction), () -> zeroModules());
+  }
+
+  public Command DummyCommand()
+  {
+    return run(() -> dummyFunc());
   }
 
   public Command ToAngleCommand(Supplier<Double> angle)

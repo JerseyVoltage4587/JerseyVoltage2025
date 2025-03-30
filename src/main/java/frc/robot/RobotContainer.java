@@ -87,6 +87,7 @@ public class RobotContainer {
       () -> jRightTrigger.getAsBoolean()
     ));
 
+    m_intake.setDefaultCommand(m_intake.ZeroIntakeMotorCommand());
     m_elevator.setDefaultCommand(new HoldPosition());
     // m_elevator.setDefaultCommand(m_elevator.HoldPositionCommand());
     m_algaepivot.setDefaultCommand(m_algaepivot.AlgaePivotHoldPositionCommand()); 
@@ -182,8 +183,12 @@ public class RobotContainer {
 
     //Robot Commands
     //Driver Commands
+
+    // jButtonY.whileTrue(m_swervesubsystem.DummyCommand());
+    // jButtonA.onTrue(m_swervesubsystem.DummyCommand());
+    // jButtonB.onTrue(m_swervesubsystem.DummyCommand().withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
     jButtonY.whileTrue(m_swervesubsystem.DriveCommand(() -> 0.0, () -> 0.1, () -> 0.0, () -> false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
-    jButtonA.onTrue(m_swervesubsystem.DriveCommand(() -> 0.0, () -> -0.1, () -> 0.0, () -> false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
+    jButtonA.whileTrue(m_swervesubsystem.DriveCommand(() -> 0.0, () -> -0.1, () -> 0.0, () -> false).withInterruptBehavior(InterruptionBehavior.kCancelIncoming));
 
     jUpArrow.whileTrue(m_swervesubsystem.ForwardAtAngleCommand(() -> {return 0.0;}));
     jUpRightArrow.whileTrue(m_swervesubsystem.ForwardAtAngleCommand(() -> 45.0));
